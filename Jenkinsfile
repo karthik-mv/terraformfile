@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         DEV_SERVER_IP = 'ec2-user@172.31.16.83'
-        IMAGE_NAME = "devopstrainer/deploy:phpapp"
+        IMAGE_NAME = "karthikmv93/docker"
     }
 
     parameters {

@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         DEV_SERVER_IP = 'ec2-user@172.31.16.83'
-        DEPLOY_SERVER_IP = 'ec2-user@172.31.26.244'
+        //DEPLOY_SERVER_IP = 'ec2-user@172.31.26.244'
         IMAGE_NAME = "karthikmv93/docker"
     }
     parameters {
@@ -95,7 +95,7 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                             echo "Deploying the code version ${params.APP}"
                             // Install Docker on the deploy server
-                            sh "scp -v -o StrictHostKeyChecking=no server-script.sh ${DEPLOY_SERVER_IP}:/home/ec2-user"
+                            sh "scp -v -o StrictHostKeyChecking=no server-script.sh ${EC2_PUBLIC_IP}:/home/ec2-user"
                             sh "ssh ec2-user@${EC2_PUBLIC_IP} sudo yum install docker -y"
                             sh "ssh ec2-user@${EC2_PUBLIC_IP} sudo systemctl start docker"
                             // Login to Docker Hub and run the container

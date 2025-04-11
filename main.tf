@@ -5,6 +5,13 @@ terraform {
       version = "5.93.0"
     }
   }
+
+  # backend "s3" {
+  #   bucket = "terraform-bucket93"
+  #   key    = "terraform.tfstate"
+  #   region = "us-east-1"
+  #   dynamodb_table = "aws-table"
+  # }
 }
  
 provider "aws" {
@@ -13,48 +20,43 @@ provider "aws" {
 
 }
 
-#using variable and creating instance
-variable "instance_type" {
 
-}
+#Vpc
 
-data "aws_ami" "myami" {
-  most_recent = true 
-
-  filter{
-    name = "name"
-    values = ["amzn2-ami-kernel-*-x86_64-gp2"]
-  }
-
-  filetr{
-    name = "virtualization-type"
-    values = ["hvm"]
-  }
-  owners = ["amazon"]
-
-}
-
-
-resource "aws_instance" "web" {
-  count = 2
-  #ami           = "ami-02f624c08a83ca16f"
-  ami = data.aws_ami.myami.id  #ami will be fetched from the data source
-  instance_type = "t2.micro"
+resource "aws_vpc" "myvpc" {
+  cidr_block       = var.vpc_cidr_block  #"10.0.0.0/16"
 
   tags = {
-    #Name = "HelloWorld"
-    Name = "tf-${count.index}"
+    Name = "my-vpc"
   }
 }
 
-output "ip" {
-  value = aws_instance.web[0].public_ip
+module "mysubnet"{
+  source = "./modules/subnet"
+  vpc_id = aws_vpc.myvpc.id
+  subnet_cidr_block = var.subnet_cidr_block
+  az = var.az
+  env = var.env
 }
 
-output "nwinterface" {
-  value = aws_instance.web[0].primary_network_interface_id
+module "webserver"{
+  source = "./modules/webserver"
+  vpc_id = aws_vpc.myvpc.id
+  subnet_id = module.mysubnet.subnet.id
+  env = var.env
+  instance_type = var.instance_type
 }
 
-output "ami" {
-  value = aws_instance.web[0].ami
-}
+
+
+# output "ip" {
+#   value = aws_instance.web[0].public_ip
+# }
+
+# output "nwinterface" {
+#   value = aws_instance.web[0].primary_network_interface_id
+# }
+
+# output "ami" {
+#   value = aws_instance.web[1].ami
+# }

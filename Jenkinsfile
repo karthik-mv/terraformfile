@@ -13,32 +13,7 @@ pipeline {
         booleanParam(name: 'executeTests', defaultValue: true, description: 'Decide to run test cases')
         choice(name: 'APPVERSION', choices: ['1.1', '2.1', '3.1'])
     }
-    stages {
-        stage('Compile') {
-            agent any
-            steps {
-                echo "Compile the code"
-                sh "mvn compile"
-            }
-        }
-
-        stage('Unit test') {
-            when {
-                expression {
-                    return params.executeTests == true
-                }
-            }
-            agent any
-            steps {
-                echo "Test the code in ${params.Env}"
-                sh "mvn test"
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
+    
 
         stage('Package & Push the Image to Registry') {
             agent any

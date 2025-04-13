@@ -5,14 +5,14 @@ sudo yum install git -y
 sudo yum install docker -y
 sudo systemctl start docker
 
-if [ -d "addressbook-v1" ]
+if [ -d "terraformfile" ]
 then
   echo "repo is cloned and exists"
-  cd /home/ec2-user/addressbook-v1
-  git pull origin tf-cicd
+  cd /home/ec2-user/terraformfile
+  git pull origin cicd-tf
 else
-  git clone https://github.com/preethid/addressbook-v1.git
+  git clone https://github.com/karthik-mv/terraformfile.git
 fi
-cd /home/ec2-user/addressbook-v1
-git checkout tf-cicd
-sudo docker build -t $1:$2 /home/ec2-user/addressbook-v1
+cd /home/ec2-user/terraformfile
+git checkout cicd-tf
+sudo docker build -t $1:$2 /home/ec2-user/terraformfile

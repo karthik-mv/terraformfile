@@ -41,6 +41,7 @@ pipeline {
             agent any
             steps {
                 script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
                     dir('terraform') {
                         sh "terraform init"
                         sh "terraform apply --auto-approve"
@@ -49,6 +50,7 @@ pipeline {
                             returnStdout: true
                         ).trim()
                         echo "Provisioned EC2 IP: ${EC2_PUBLIC_IP}"
+                    }
                     }
                 }
             }
